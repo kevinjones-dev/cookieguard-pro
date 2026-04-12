@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CookieGuard Pro</title>
+  <!-- All styles in a separate file — MV3 does not allow inline styles via style tags with unsafe content -->
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+
+  <!-- ===== HEADER ===== -->
+  <header class="header">
+    <div class="header-left">
+      <div class="logo">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M10 2L12.5 7H17.5L13.5 10.5L15 15.5L10 12.5L5 15.5L6.5 10.5L2.5 7H7.5L10 2Z" fill="#00d4aa" stroke="#00d4aa" stroke-width="0.5" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <span class="app-name">CookieGuard Pro</span>
+    </div>
+    <div class="site-badge">
+      <span id="site-domain">Loading...</span>
+    </div>
+  </header>
+
+  <!-- ===== TOOLBAR ===== -->
+  <div class="toolbar">
+    <div class="cookie-count-wrap">
+      <span id="cookie-count">0</span>
+      <span class="cookie-count-label"> cookies</span>
+    </div>
+    <button id="delete-all-btn" class="btn btn-danger" title="Delete all cookies for this site">
+      <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+        <path d="M2 3.5h9M5 3.5V2.5a.5.5 0 01.5-.5h2a.5.5 0 01.5.5v1M10.5 3.5l-.5 7a.5.5 0 01-.5.5H4a.5.5 0 01-.5-.5l-.5-7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Delete All
+    </button>
+  </div>
+
+  <!-- ===== LOADING STATE ===== -->
+  <div id="loading-state" class="state-view">
+    <div class="spinner"></div>
+    <p>Reading cookies…</p>
+  </div>
+
+  <!-- ===== EMPTY STATE ===== -->
+  <div id="empty-state" class="state-view hidden">
+    <div class="empty-icon">🍪</div>
+    <p class="empty-title">No cookies found</p>
+    <p class="empty-sub">This site hasn't set any cookies.</p>
+  </div>
+
+  <!-- ===== ERROR STATE ===== -->
+  <div id="error-state" class="state-view hidden">
+    <div class="empty-icon">⚠️</div>
+    <p class="empty-title">Can't read cookies here</p>
+    <p class="empty-sub">This doesn't work on Chrome internal pages (chrome://) or the new tab page. Visit a real website and try again.</p>
+  </div>
+
+  <!-- ===== COOKIE LIST ===== -->
+  <ul id="cookie-list" class="cookie-list hidden"></ul>
+
+  <!-- ===== TOAST NOTIFICATION ===== -->
+  <div id="toast" class="toast hidden"></div>
+
+  <!-- All JavaScript in a separate file — MV3 does not allow inline scripts -->
+  <script src="popup.js"></script>
+</body>
+</html>
