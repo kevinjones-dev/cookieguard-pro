@@ -258,10 +258,7 @@ function deleteCookiesForUrl(url) {
 
 // Update the extension icon badge
 function updateBadge(isEnabled) {
-  if (isEnabled) {
-    chrome.action.setBadgeText({ text: "ON" });
-    chrome.action.setBadgeBackgroundColor({ color: "#00d4aa" });
-  } else {
-    chrome.action.setBadgeText({ text: "" });
-  }
+  // No badge — the toggle in the popup clearly shows the current state.
+  // Badges render as a colored rectangle that covers the icon, which looks worse than nothing.
+  chrome.action.setBadgeText({ text: "" });
 }
