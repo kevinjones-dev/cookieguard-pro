@@ -21,6 +21,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Toolbar
   const cookieCountEl     = document.getElementById("cookie-count");
+  const exportBtn         = document.getElementById("export-btn");
+  const importBtn         = document.getElementById("import-btn");
+  const importFileInput   = document.getElementById("import-file-input");
   const addCookieBtn      = document.getElementById("add-cookie-btn");
   const deleteAllBtn      = document.getElementById("delete-all-btn");
 
@@ -179,6 +182,162 @@ document.addEventListener("DOMContentLoaded", () => {
   // -----------------------------------------------
   settingsBtn.addEventListener("click", () => {
     chrome.runtime.openOptionsPage();
+  });
+
+  // -----------------------------------------------
+  // EXPORT — save all cookies for this site as JSON
+  // -----------------------------------------------
+  exportBtn.addEventListener("click", () => {
+    if (!currentTabUrl) { showToast("No site loaded", "error"); return; }
+
+    chrome.cookies.getAll({ url: currentTabUrl }, (cookies) => {
+      if (chrome.runtime.lastError || !cookies || cookies.length === 0) {
+        showToast("No cookies to export", "error");
+        return;
+      }
+
+      // Build the export object
+      const exportData = {
+        exportedBy:  "CookieGuard Pro",
+        version:     "1.0",
+        exportDate:  new Date().toISOString(),
+        domain:      currentHostname,
+        cookieCount: cookies.length,
+        cookies: cookies.map((c) => ({
+          name:           c.name,
+          value:          c.value,
+          domain:         c.domain,
+          path:           c.path,
+          expirationDate: c.expirationDate || null,
+          secure:         c.secure,
+          httpOnly:       c.httpOnly,
+          sameSite:       c.sameSite || "unspecified"
+        }))
+      };
+
+      // Turn it into a nicely formatted JSON string
+      const json     = JSON.stringify(exportData, null, 2);
+      const blob     = new Blob([json], { type: "application/json" });
+      const blobUrl  = URL.createObjectURL(blob);
+      const filename = `cookies-${currentHostname}-${new Date().toISOString().slice(0, 10)}.json`;
+
+      // Create a temporary link and click it to trigger the download
+      const a = document.createElement("a");
+      a.href     = blobUrl;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
+
+      showToast(`Exported ${cookies.length} cookie${cookies.length !== 1 ? "s" : ""}`, "success");
+    });
+  });
+
+  // -----------------------------------------------
+  // IMPORT — load cookies from a JSON file
+  // -----------------------------------------------
+
+  // Clicking the Import button opens the file picker
+  importBtn.addEventListener("click", () => {
+    importFileInput.click();
+  });
+
+  // When the user picks a file, read and process it
+  importFileInput.addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+
+    reader.onload = (event) => {
+      let data;
+
+      // Step 1: Parse the JSON
+      try {
+        data = JSON.parse(event.target.result);
+      } catch (err) {
+        showToast("Could not read file — invalid JSON", "error");
+        return;
+      }
+
+      // Step 2: Validate the structure
+      if (!data.cookies || !Array.isArray(data.cookies)) {
+        showToast("Invalid file — not a CookieGuard export", "error");
+        return;
+      }
+
+      if (data.cookies.length === 0) {
+        showToast("File has no cookies to import", "error");
+        return;
+      }
+
+      // Step 3: Import each cookie
+      const now      = Date.now() / 1000; // current time in seconds (same unit as expirationDate)
+      let attempted  = 0;
+      let succeeded  = 0;
+      let skippedCount = 0;
+      const total    = data.cookies.length;
+
+      // Called after each cookie attempt — shows the final toast when all are done
+      function checkDone() {
+        attempted++;
+        if (attempted === total) {
+          const msg = skippedCount > 0
+            ? `Imported ${succeeded} cookie${succeeded !== 1 ? "s" : ""}, skipped ${skippedCount} (expired or invalid)`
+            : `Imported ${succeeded} cookie${succeeded !== 1 ? "s" : ""}`;
+          showToast(msg, succeeded > 0 ? "success" : "error");
+          if (succeeded > 0) loadCookiesForUrl(currentTabUrl);
+        }
+      }
+
+      data.cookies.forEach((cookie) => {
+
+        // Skip cookies missing a name
+        if (!cookie || !cookie.name) { skippedCount++; checkDone(); return; }
+
+        // Skip cookies that have already expired
+        if (cookie.expirationDate && cookie.expirationDate < now) {
+          skippedCount++;
+          checkDone();
+          return;
+        }
+
+        // Build the URL chrome.cookies.set() needs
+        const isSecure    = cookie.secure || false;
+        const scheme      = isSecure ? "https" : "http";
+        const rawDomain   = cookie.domain || currentHostname;
+        const cleanDomain = rawDomain.startsWith(".") ? rawDomain.slice(1) : rawDomain;
+        const cookieUrl   = `${scheme}://${cleanDomain}${cookie.path || "/"}`;
+
+        const descriptor = {
+          url:      cookieUrl,
+          name:     cookie.name,
+          value:    cookie.value    || "",
+          domain:   cleanDomain,
+          path:     cookie.path     || "/",
+          secure:   isSecure,
+          httpOnly: cookie.httpOnly || false,
+          sameSite: cookie.sameSite || "unspecified"
+        };
+
+        // Only set expirationDate if the cookie has one
+        if (cookie.expirationDate) {
+          descriptor.expirationDate = cookie.expirationDate;
+        }
+
+        chrome.cookies.set(descriptor, (result) => {
+          if (chrome.runtime.lastError || !result) skippedCount++;
+          else succeeded++;
+          checkDone();
+        });
+      });
+    };
+
+    reader.readAsText(file);
+
+    // Reset the file input so the same file can be imported again if needed
+    importFileInput.value = "";
   });
 
   // -----------------------------------------------
