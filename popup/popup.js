@@ -4,7 +4,7 @@
 //       settings button, free-tier limit messaging
 // =============================================
 
-const FREE_TIER_WHITELIST_LIMIT = 10;
+const FREE_TIER_WHITELIST_LIMIT = 5;
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -157,7 +157,7 @@ document.addEventListener("DOMContentLoaded", () => {
       // Check free-tier limit before adding
       if (currentWhitelist.length >= FREE_TIER_WHITELIST_LIMIT) {
         showToast(
-          `Free tier limit: ${FREE_TIER_WHITELIST_LIMIT} protected sites max. Open Settings to manage.`,
+          "Free tier: 5-site limit reached. Premium coming soon.",
           "error"
         );
         return;

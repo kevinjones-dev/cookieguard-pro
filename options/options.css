@@ -14,7 +14,7 @@
 
   --text-primary:  #e8eaf6;
   --text-secondary:#8b90b8;
-  --text-muted:    #565a80;
+  --text-muted:    #7c82a8;
 
   --accent:        #00d4aa;
   --accent-dim:    rgba(0, 212, 170, 0.12);
@@ -515,7 +515,7 @@ html, body {
   z-index: 1;
   text-shadow: none;
 }
-.theme-swatch-dark .theme-swatch-label  { color: #8b90b8; }
+.theme-swatch-dark .theme-swatch-label  { color: #ffffff; }
 .theme-swatch-light .theme-swatch-label { color: #4a4f72; }
 
 /* Selected state */

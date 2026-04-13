@@ -3,7 +3,7 @@
 // Manages: auto-delete toggle, whitelist CRUD
 // =============================================
 
-const FREE_TIER_LIMIT = 10;
+const FREE_TIER_LIMIT = 5;
 const GITHUB_URL      = "https://github.com/kevinjones-dev/cookieguard-pro";
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -129,7 +129,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Check limit
       if (whitelist.length >= FREE_TIER_LIMIT) {
-        showAddError(`Free tier limit: ${FREE_TIER_LIMIT} protected sites maximum. Remove a site to add a new one.`);
+        showAddError("You've reached the 5-site limit on the free tier. Premium will unlock unlimited protected sites — coming soon.");
         return;
       }
 
