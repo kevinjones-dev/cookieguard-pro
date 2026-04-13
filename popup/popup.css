@@ -44,7 +44,7 @@ html { width: 420px; }
 
 body {
   width: 420px;
-  height: 580px; /* slightly taller to accommodate the controls bar */
+  height: 600px;
   background: var(--bg-primary);
   color: var(--text-primary);
   font-family: var(--font);
@@ -702,3 +702,97 @@ body {
 }
 .toast.success { border-color: rgba(0,212,170,0.4); color: var(--accent); }
 .toast.error   { border-color: rgba(255,83,112,0.4); color: var(--danger); }
+
+/* =============================================
+   SEARCH BAR
+   ============================================= */
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 12px;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+/* The icon + input + clear button sit inside a styled "input box" */
+.search-bar-inner {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex: 1;
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 5px 9px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.search-bar-inner:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-dim);
+}
+
+.search-icon {
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.search-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text-primary);
+  font-family: var(--font);
+  font-size: 12px;
+  padding: 0;
+  min-width: 0;
+}
+.search-input::placeholder { color: var(--text-muted); }
+
+.search-clear {
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--border-light);
+  border: none;
+  border-radius: 50%;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 12px;
+  line-height: 1;
+  padding: 0;
+  transition: background 0.13s, color 0.13s;
+  flex-shrink: 0;
+}
+.search-clear:hover { background: var(--danger-dim); color: var(--danger); }
+
+/* Highlight matching text in search results */
+.search-match {
+  background: rgba(0, 212, 170, 0.2);
+  color: var(--accent);
+  border-radius: 2px;
+}
+
+/* =============================================
+   LIGHT THEME
+   Overrides CSS variables when body has .light-theme
+   ============================================= */
+body.light-theme {
+  --bg-primary:    #f4f6fd;
+  --bg-secondary:  #ffffff;
+  --bg-card:       #eaecf8;
+  --bg-hover:      #dfe2f4;
+  --border:        #d4d8ee;
+  --border-light:  #c2c7e0;
+
+  --text-primary:  #1a1c2e;
+  --text-secondary:#4a4f72;
+  --text-muted:    #8b90b8;
+
+  /* accent, danger, warning stay the same — they look good on both themes */
+}

@@ -27,6 +27,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const addCookieBtn      = document.getElementById("add-cookie-btn");
   const deleteAllBtn      = document.getElementById("delete-all-btn");
 
+  // Search bar
+  const searchInput       = document.getElementById("search-input");
+  const searchClear       = document.getElementById("search-clear");
+
   // List panel states
   const panelContainer    = document.getElementById("panel-container");
   const loadingStateEl    = document.getElementById("loading-state");
@@ -101,9 +105,16 @@ document.addEventListener("DOMContentLoaded", () => {
   // LOAD SETTINGS FROM STORAGE
   // -----------------------------------------------
   function loadSettings(callback) {
-    chrome.storage.local.get(["autoDeleteEnabled", "whitelist"], (result) => {
+    chrome.storage.local.get(["autoDeleteEnabled", "whitelist", "theme"], (result) => {
       autoDeleteEnabled  = result.autoDeleteEnabled || false;
       currentWhitelist   = result.whitelist         || [];
+
+      // Apply theme — add .light-theme class to body if user chose light
+      if (result.theme === "light") {
+        document.body.classList.add("light-theme");
+      } else {
+        document.body.classList.remove("light-theme");
+      }
 
       // Set the toggle to match the saved setting
       autoDeleteToggle.checked = autoDeleteEnabled;
@@ -401,6 +412,73 @@ document.addEventListener("DOMContentLoaded", () => {
   // Save button
   saveBtn.addEventListener("click", saveCookie);
 
+  // Escape key — close the edit panel if it's open
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && panelContainer.classList.contains("showing-edit")) {
+      e.preventDefault(); // Stop Chrome from closing the entire popup
+      closeEditPanel();
+      loadCookiesForUrl(currentTabUrl);
+    }
+  });
+
+  // -----------------------------------------------
+  // SEARCH / FILTER
+  // -----------------------------------------------
+  searchInput.addEventListener("input", () => {
+    const query = searchInput.value.trim().toLowerCase();
+
+    // Show/hide the clear button
+    if (query) {
+      searchClear.classList.remove("hidden");
+    } else {
+      searchClear.classList.add("hidden");
+    }
+
+    filterCookieList(query);
+  });
+
+  searchClear.addEventListener("click", () => {
+    searchInput.value = "";
+    searchClear.classList.add("hidden");
+    filterCookieList("");
+    searchInput.focus();
+  });
+
+  // Filter the visible cookie rows by name (and value) matching the query
+  function filterCookieList(query) {
+    const rows = document.querySelectorAll(".cookie-item");
+    let visibleCount = 0;
+
+    rows.forEach((row) => {
+      const nameEl  = row.querySelector(".cookie-name");
+      const valueEl = row.querySelector(".cookie-value");
+      const name    = (nameEl  ? nameEl.textContent  : "").toLowerCase();
+      const value   = (valueEl ? valueEl.textContent : "").toLowerCase();
+
+      if (!query || name.includes(query) || value.includes(query)) {
+        row.style.display = "";
+        visibleCount++;
+      } else {
+        row.style.display = "none";
+      }
+    });
+
+    // If nothing matches, show a brief "no results" state inline
+    const noResults = document.getElementById("search-no-results");
+    if (query && visibleCount === 0) {
+      if (!noResults) {
+        const msg = document.createElement("li");
+        msg.id        = "search-no-results";
+        msg.className = "state-view";
+        msg.style.padding = "24px";
+        msg.innerHTML = `<p class="empty-title">No match for "${escapeHtml(query)}"</p>`;
+        cookieListEl.appendChild(msg);
+      }
+    } else if (noResults) {
+      noResults.remove();
+    }
+  }
+
   // =============================================
   // COOKIE LIST FUNCTIONS
   // =============================================
@@ -535,6 +613,9 @@ document.addEventListener("DOMContentLoaded", () => {
   function closeEditPanel() {
     panelContainer.classList.remove("showing-edit");
     editingOriginalCookie = null;
+    // Clear search so the full list shows when returning
+    searchInput.value = "";
+    searchClear.classList.add("hidden");
   }
 
   // =============================================
@@ -649,7 +730,11 @@ document.addEventListener("DOMContentLoaded", () => {
     if (state === "loading") loadingStateEl.classList.remove("hidden");
     if (state === "empty")   emptyStateEl.classList.remove("hidden");
     if (state === "error")   errorStateEl.classList.remove("hidden");
-    if (state === "list")    cookieListEl.classList.remove("hidden");
+    if (state === "list") {
+      cookieListEl.classList.remove("hidden");
+      // Auto-focus the search input so the user can type immediately
+      setTimeout(() => searchInput.focus(), 50);
+    }
   }
 
   function showError() {

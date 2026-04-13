@@ -422,3 +422,119 @@ html, body {
 .footer-link:hover { opacity: 1; text-decoration: underline; }
 
 .hidden { display: none !important; }
+
+/* =============================================
+   THEME PICKER
+   ============================================= */
+.theme-options {
+  display: flex;
+  gap: 16px;
+  padding: 16px 20px 20px;
+}
+
+.theme-option {
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Hide the actual radio button — we style the swatch instead */
+.theme-radio {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.theme-swatch {
+  width: 120px;
+  height: 72px;
+  border-radius: 10px;
+  border: 2px solid var(--border-light);
+  display: flex;
+  align-items: flex-end;
+  padding: 8px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  position: relative;
+  overflow: hidden;
+}
+
+.theme-swatch-dark {
+  background: #141520;
+}
+
+/* Mini mock-UI elements inside the dark swatch */
+.theme-swatch-dark::before {
+  content: "";
+  position: absolute;
+  top: 8px; left: 8px; right: 8px;
+  height: 16px;
+  background: #1c1e30;
+  border-radius: 4px;
+  border: 1px solid #2e3250;
+}
+.theme-swatch-dark::after {
+  content: "";
+  position: absolute;
+  top: 32px; left: 8px;
+  width: 60%;
+  height: 8px;
+  background: rgba(0, 212, 170, 0.3);
+  border-radius: 3px;
+}
+
+.theme-swatch-light {
+  background: #f4f6fd;
+}
+.theme-swatch-light::before {
+  content: "";
+  position: absolute;
+  top: 8px; left: 8px; right: 8px;
+  height: 16px;
+  background: #ffffff;
+  border-radius: 4px;
+  border: 1px solid #d4d8ee;
+}
+.theme-swatch-light::after {
+  content: "";
+  position: absolute;
+  top: 32px; left: 8px;
+  width: 60%;
+  height: 8px;
+  background: rgba(0, 212, 170, 0.4);
+  border-radius: 3px;
+}
+
+.theme-swatch-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  position: relative;
+  z-index: 1;
+  text-shadow: none;
+}
+.theme-swatch-dark .theme-swatch-label  { color: #8b90b8; }
+.theme-swatch-light .theme-swatch-label { color: #4a4f72; }
+
+/* Selected state */
+.theme-radio:checked + .theme-swatch {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-dim);
+}
+
+/* =============================================
+   LIGHT THEME for Options page
+   ============================================= */
+body.light-theme {
+  --bg-primary:    #f4f6fd;
+  --bg-secondary:  #ffffff;
+  --bg-card:       #eaecf8;
+  --bg-hover:      #dfe2f4;
+  --border:        #d4d8ee;
+  --border-light:  #c2c7e0;
+  --text-primary:  #1a1c2e;
+  --text-secondary:#4a4f72;
+  --text-muted:    #8b90b8;
+}

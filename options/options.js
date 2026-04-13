@@ -21,6 +21,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const whitelistUl      = document.getElementById("whitelist-ul");
   const whitelistEmpty   = document.getElementById("whitelist-empty");
   const githubLink       = document.getElementById("github-link");
+  const themeRadios      = document.querySelectorAll(".theme-radio");
 
   // -----------------------------------------------
   // SET STATIC LINKS
@@ -30,13 +31,22 @@ document.addEventListener("DOMContentLoaded", () => {
   // -----------------------------------------------
   // LOAD SETTINGS
   // -----------------------------------------------
-  chrome.storage.local.get(["autoDeleteEnabled", "whitelist"], (result) => {
+  chrome.storage.local.get(["autoDeleteEnabled", "whitelist", "theme"], (result) => {
     const autoDeleteEnabled = result.autoDeleteEnabled || false;
     const whitelist         = result.whitelist         || [];
+    const savedTheme        = result.theme             || "dark";
 
     // Set the toggle
     autoDeleteToggle.checked = autoDeleteEnabled;
     updateStatusLine(autoDeleteEnabled);
+
+    // Apply saved theme
+    applyTheme(savedTheme);
+
+    // Set the correct radio button
+    themeRadios.forEach((radio) => {
+      radio.checked = (radio.value === savedTheme);
+    });
 
     // Render the whitelist
     renderWhitelist(whitelist);
@@ -59,6 +69,25 @@ document.addEventListener("DOMContentLoaded", () => {
     } else {
       autoDeleteStatus.textContent = "Auto-delete is OFF — cookies will not be deleted when tabs close.";
       autoDeleteStatus.className   = "status-line status-off";
+    }
+  }
+
+  // -----------------------------------------------
+  // THEME TOGGLE
+  // -----------------------------------------------
+  themeRadios.forEach((radio) => {
+    radio.addEventListener("change", () => {
+      const chosen = radio.value; // "dark" or "light"
+      chrome.storage.local.set({ theme: chosen });
+      applyTheme(chosen);
+    });
+  });
+
+  function applyTheme(theme) {
+    if (theme === "light") {
+      document.body.classList.add("light-theme");
+    } else {
+      document.body.classList.remove("light-theme");
     }
   }
 
