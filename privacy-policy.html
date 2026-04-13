@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CookieGuard Pro — Privacy Policy</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.7;
+            color: #1a1a2e;
+            background-color: #f8f9fa;
+            padding: 2rem 1rem;
+        }
+        .container {
+            max-width: 720px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+        h1 {
+            font-size: 1.75rem;
+            margin-bottom: 0.25rem;
+            color: #1a1a2e;
+        }
+        .last-updated {
+            color: #6b7280;
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+        }
+        h2 {
+            font-size: 1.2rem;
+            margin-top: 2rem;
+            margin-bottom: 0.75rem;
+            color: #1a1a2e;
+        }
+        p {
+            margin-bottom: 1rem;
+            color: #374151;
+        }
+        ul {
+            margin-bottom: 1rem;
+            padding-left: 1.5rem;
+        }
+        li {
+            margin-bottom: 0.4rem;
+            color: #374151;
+        }
+        a {
+            color: #2563eb;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .highlight-box {
+            background: #f0fdf4;
+            border-left: 4px solid #22c55e;
+            padding: 1rem 1.25rem;
+            margin: 1.5rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .highlight-box p {
+            margin-bottom: 0;
+            font-weight: 500;
+            color: #166534;
+        }
+        .footer {
+            margin-top: 2.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #e5e7eb;
+            font-size: 0.85rem;
+            color: #6b7280;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>CookieGuard Pro — Privacy Policy</h1>
+        <p class="last-updated">Last updated: April 12, 2026</p>
+
+        <div class="highlight-box">
+            <p>CookieGuard Pro collects zero user data. No analytics, no tracking, no telemetry. Everything stays on your device.</p>
+        </div>
+
+        <h2>What This Extension Does</h2>
+        <p>CookieGuard Pro is a browser extension that lets you view, edit, delete, and automatically manage cookies in Google Chrome. It is a local tool — all functionality runs entirely on your device.</p>
+
+        <h2>What Data the Extension Accesses</h2>
+        <p>To perform its core functions, the extension reads and writes the following data, all of which stays on your device:</p>
+        <ul>
+            <li><strong>Browser cookies</strong> — names, values, domains, paths, expiration dates, and security flags for sites you visit. This is the core of what the extension manages.</li>
+            <li><strong>Tab URLs</strong> — used only to determine which site's cookies to display and to detect when a tab is closed (for the auto-delete feature).</li>
+            <li><strong>Your preferences</strong> — settings you configure within the extension, such as your whitelist, auto-delete toggle, and theme choice. These are saved locally using Chrome's built-in storage.</li>
+        </ul>
+
+        <h2>What We Do NOT Do</h2>
+        <p>We do not collect, transmit, or store any data externally. Specifically:</p>
+        <ul>
+            <li>We do not send any data to any server, API, or third party — ever.</li>
+            <li>We do not collect usage analytics or telemetry of any kind.</li>
+            <li>We do not track which websites you visit.</li>
+            <li>We do not log cookie contents.</li>
+            <li>We do not display advertisements.</li>
+            <li>We do not sell, share, or monetize your data in any form.</li>
+            <li>We do not include third-party tracking scripts.</li>
+            <li>We do not use remote code — all code is bundled locally within the extension.</li>
+        </ul>
+
+        <h2>Where Your Data Is Stored</h2>
+        <p>All extension data is stored locally on your device using <code>chrome.storage.local</code>, which is Chrome's built-in local storage for extensions. This includes your whitelist, auto-delete preferences, theme setting, and any other configuration.</p>
+        <p>When you uninstall CookieGuard Pro, Chrome automatically deletes all data stored by the extension.</p>
+
+        <h2>Permissions and Why We Need Them</h2>
+        <ul>
+            <li><strong>cookies</strong> — Required to read, edit, and delete browser cookies. This is the core functionality of the extension.</li>
+            <li><strong>tabs</strong> — Required to detect when you close a tab, which triggers the auto-delete feature. Also used to identify the current site when you open the extension popup.</li>
+            <li><strong>storage</strong> — Required to save your preferences (whitelist, auto-delete setting, theme) locally on your device.</li>
+            <li><strong>alarms</strong> — Required for scheduled cookie cleanup tasks.</li>
+            <li><strong>activeTab</strong> — Required to determine which website's cookies to display when you open the popup.</li>
+            <li><strong>Host permissions (all URLs)</strong> — Required because cookie management must work on any website you visit. This is the same permission used by all cookie editor extensions.</li>
+        </ul>
+
+        <h2>Payment Processing</h2>
+        <p>If premium features are offered in the future, payment processing will be handled entirely by Stripe, an industry-standard payment processor. We will never see, store, or have access to your credit card number or payment details. We will only receive a confirmation of whether a license is active.</p>
+
+        <h2>Open Source</h2>
+        <p>CookieGuard Pro is open source. You can inspect the complete source code to verify every claim in this privacy policy:</p>
+        <p><a href="https://github.com/kevinjones-dev/cookieguard-pro" target="_blank" rel="noopener">github.com/kevinjones-dev/cookieguard-pro</a></p>
+
+        <h2>Changes to This Policy</h2>
+        <p>If we ever change this privacy policy, we will update the "Last updated" date at the top of this page. Any material changes — especially any that would involve data collection — will be clearly communicated through an extension update and noted in the Chrome Web Store listing.</p>
+
+        <h2>Contact</h2>
+        <p>If you have questions about this privacy policy or the extension's data practices, you can reach us at:</p>
+        <p><a href="mailto:privacy@cookieguardpro.com">privacy@cookieguardpro.com</a></p>
+        <p>You can also open an issue on our <a href="https://github.com/kevinjones-dev/cookieguard-pro" target="_blank" rel="noopener">GitHub repository</a>.</p>
+
+        <div class="footer">
+            <p>CookieGuard Pro is an open-source Chrome extension. This privacy policy is hosted on GitHub Pages.</p>
+        </div>
+    </div>
+</body>
+</html>
