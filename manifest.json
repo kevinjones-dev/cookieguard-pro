@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "CookieGuard Pro",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Edit, manage, and auto-delete cookies. Open source, zero data collection, no tracking. Ever.",
   "permissions": ["cookies", "tabs", "storage", "alarms", "activeTab"],
   "host_permissions": ["<all_urls>"],
