@@ -2,30 +2,105 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CookieGuard Pro — Settings</title>
-  <style>
-    body {
-      background: #141520;
-      color: #e8eaf6;
-      font-family: 'Segoe UI', system-ui, sans-serif;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      margin: 0;
-    }
-    .message {
-      text-align: center;
-      opacity: 0.6;
-    }
-    .message h2 { font-size: 18px; margin-bottom: 8px; }
-    .message p  { font-size: 13px; }
-  </style>
+  <link rel="stylesheet" href="options.css" />
 </head>
 <body>
-  <div class="message">
-    <h2>⚙️ Settings</h2>
-    <p>Full settings page coming in Phase 3.</p>
-  </div>
+
+  <div class="page">
+
+    <!-- ===== HEADER ===== -->
+    <header class="page-header">
+      <div class="logo-wrap">
+        <div class="logo">
+          <svg width="22" height="22" viewBox="0 0 20 20" fill="none">
+            <path d="M10 2L12.5 7H17.5L13.5 10.5L15 15.5L10 12.5L5 15.5L6.5 10.5L2.5 7H7.5L10 2Z" fill="#00d4aa" stroke="#00d4aa" stroke-width="0.5" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div>
+          <h1 class="app-name">CookieGuard Pro</h1>
+          <p class="app-sub">Settings</p>
+        </div>
+      </div>
+    </header>
+
+    <main class="content">
+
+      <!-- ===== SECTION: AUTO-DELETE ===== -->
+      <section class="card">
+        <div class="card-header">
+          <div class="card-title-wrap">
+            <h2 class="card-title">Auto-Delete</h2>
+            <p class="card-desc">Automatically delete cookies when you close a tab. Sites on your Protected list are always kept.</p>
+          </div>
+          <!-- Big toggle -->
+          <label class="toggle" title="Enable or disable auto-delete">
+            <input type="checkbox" id="auto-delete-toggle" />
+            <span class="toggle-track">
+              <span class="toggle-thumb"></span>
+            </span>
+          </label>
+        </div>
+        <div id="auto-delete-status" class="status-line status-off">
+          Auto-delete is <strong>OFF</strong> — cookies will not be deleted when tabs close.
+        </div>
+      </section>
+
+      <!-- ===== SECTION: PROTECTED SITES (WHITELIST) ===== -->
+      <section class="card">
+        <div class="card-header">
+          <div class="card-title-wrap">
+            <h2 class="card-title">Protected Sites</h2>
+            <p class="card-desc">Cookies on these sites will <em>never</em> be auto-deleted, even when auto-delete is on. Use this for banking, email, and any site you want to stay logged into.</p>
+          </div>
+          <!-- Slot counter -->
+          <div class="slot-counter">
+            <span id="slot-used">0</span><span class="slot-sep">/</span><span id="slot-max">10</span>
+            <span class="slot-label">sites</span>
+          </div>
+        </div>
+
+        <!-- Free-tier limit warning (shown when at 10) -->
+        <div id="limit-banner" class="limit-banner hidden">
+          <span class="limit-icon">🔒</span>
+          <div>
+            <strong>Free tier limit reached</strong>
+            <p>You've used all 10 protected sites. Remove a site to add a new one. Unlimited sites will be available in CookieGuard Pro premium — coming soon.</p>
+          </div>
+        </div>
+
+        <!-- Add new domain input -->
+        <div class="add-row">
+          <input id="new-domain-input" class="domain-input" type="text"
+            placeholder="example.com" autocomplete="off" spellcheck="false" />
+          <button id="add-domain-btn" class="btn btn-accent">
+            + Add
+          </button>
+        </div>
+        <p id="add-error" class="add-error hidden"></p>
+
+        <!-- List of whitelisted domains -->
+        <ul id="whitelist-ul" class="whitelist-list">
+          <!-- filled by JS -->
+        </ul>
+
+        <div id="whitelist-empty" class="whitelist-empty hidden">
+          <p>No sites protected yet.</p>
+          <p class="whitelist-empty-sub">Add domains above to keep cookies safe from auto-delete.</p>
+        </div>
+
+      </section>
+
+    </main>
+
+    <footer class="page-footer">
+      <p>CookieGuard Pro — Zero data collection. Everything stays on your device.</p>
+      <a id="github-link" href="#" class="footer-link" target="_blank" rel="noopener">View on GitHub</a>
+    </footer>
+
+  </div><!-- end page -->
+
+  <script src="options.js"></script>
 </body>
 </html>

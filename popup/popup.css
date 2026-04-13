@@ -1,9 +1,8 @@
 /* =============================================
-   CookieGuard Pro — Popup Styles (Phase 2)
-   Dark theme + cookie list + edit form
+   CookieGuard Pro — Popup Styles (Phase 3)
+   Adds: controls bar, toggle switch, whitelist btn
    ============================================= */
 
-/* --- Reset & Base --- */
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
@@ -32,27 +31,26 @@
   --danger-hover:  rgba(255, 83, 112, 0.22);
 
   --warning:       #ffb74d;
+  --protected:     #7c83fd; /* purple-ish for "protected" state */
 
   --radius-sm:     6px;
   --radius-md:     10px;
 
-  --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --font:      'Segoe UI', system-ui, -apple-system, sans-serif;
   --font-mono: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
 }
 
-html {
-  width: 420px;
-}
+html { width: 420px; }
 
 body {
   width: 420px;
-  height: 560px;
+  height: 580px; /* slightly taller to accommodate the controls bar */
   background: var(--bg-primary);
   color: var(--text-primary);
   font-family: var(--font);
   font-size: 13px;
   line-height: 1.5;
-  overflow: hidden; /* The panels handle their own scrolling */
+  overflow: hidden;
   display: flex;
   flex-direction: column;
 }
@@ -115,13 +113,95 @@ body {
 }
 
 /* =============================================
+   CONTROLS BAR — auto-delete toggle + whitelist
+   ============================================= */
+.controls-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 14px;
+  background: var(--bg-primary);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  gap: 8px;
+}
+
+.auto-delete-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.control-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+/* Toggle switch */
+.toggle {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  position: relative;
+}
+
+.toggle input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-track {
+  width: 34px;
+  height: 18px;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border-light);
+  border-radius: 9px;
+  position: relative;
+  transition: background 0.2s, border-color 0.2s;
+  display: flex;
+  align-items: center;
+}
+
+.toggle-thumb {
+  width: 12px;
+  height: 12px;
+  background: var(--text-muted);
+  border-radius: 50%;
+  position: absolute;
+  left: 2px;
+  transition: transform 0.2s, background 0.2s;
+}
+
+/* When the checkbox is checked, style the track and thumb */
+.toggle input:checked ~ .toggle-track {
+  background: var(--accent-dim);
+  border-color: var(--accent);
+}
+
+.toggle input:checked ~ .toggle-track .toggle-thumb {
+  background: var(--accent);
+  transform: translateX(16px);
+  box-shadow: 0 0 6px var(--accent-glow);
+}
+
+.controls-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* =============================================
    TOOLBAR
    ============================================= */
 .toolbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 8px 14px;
+  padding: 7px 14px;
   background: var(--bg-secondary);
   border-bottom: 1px solid var(--border);
   flex-shrink: 0;
@@ -164,20 +244,22 @@ body {
 
 .btn:active { transform: scale(0.97); }
 
+.btn-sm { padding: 4px 9px; font-size: 11px; }
+
 .btn-accent {
   background: var(--accent-dim);
   color: var(--accent);
   border: 1px solid var(--accent-border);
 }
 .btn-accent:hover {
-  background: rgba(0, 212, 170, 0.2);
+  background: rgba(0,212,170,0.2);
   box-shadow: 0 0 8px var(--accent-glow);
 }
 
 .btn-danger {
   background: var(--danger-dim);
   color: var(--danger);
-  border: 1px solid rgba(255, 83, 112, 0.25);
+  border: 1px solid rgba(255,83,112,0.25);
 }
 .btn-danger:hover {
   background: var(--danger-hover);
@@ -194,7 +276,20 @@ body {
   color: var(--text-primary);
 }
 
-/* Full-width save button at bottom of form */
+/* "Protected" state for the whitelist button */
+.btn-protected {
+  background: rgba(124,131,253,0.12);
+  color: var(--protected);
+  border: 1px solid rgba(124,131,253,0.3);
+}
+.btn-protected:hover {
+  background: rgba(124,131,253,0.2);
+}
+
+/* Icon-only button (settings gear) */
+.icon-btn { padding: 4px 6px; }
+
+/* Full-width save button */
 .btn-save {
   width: 100%;
   justify-content: center;
@@ -213,15 +308,14 @@ body {
 }
 
 /* =============================================
-   PANEL CONTAINER — the sliding system
+   PANEL SYSTEM
    ============================================= */
 .panel-container {
   position: relative;
   flex: 1;
-  overflow: hidden; /* clips panels that are off-screen */
+  overflow: hidden;
 }
 
-/* Both panels are absolutely positioned and fill the container */
 .panel {
   position: absolute;
   top: 0; left: 0; right: 0; bottom: 0;
@@ -232,21 +326,18 @@ body {
   flex-direction: column;
 }
 
-/* Scrollbar styling for panels */
 .panel::-webkit-scrollbar        { width: 4px; }
 .panel::-webkit-scrollbar-track  { background: transparent; }
 .panel::-webkit-scrollbar-thumb  { background: var(--border-light); border-radius: 4px; }
 
-/* Default: list is visible, edit is off to the right */
 #panel-list { transform: translateX(0); }
 #panel-edit { transform: translateX(100%); }
 
-/* When user is editing: list slides out left, edit slides in */
 .panel-container.showing-edit #panel-list { transform: translateX(-100%); }
 .panel-container.showing-edit #panel-edit { transform: translateX(0); }
 
 /* =============================================
-   STATE VIEWS (loading / empty / error)
+   STATE VIEWS
    ============================================= */
 .state-view {
   display: flex;
@@ -254,7 +345,7 @@ body {
   align-items: center;
   justify-content: center;
   gap: 10px;
-  padding: 40px 24px;
+  padding: 36px 24px;
   text-align: center;
   flex: 1;
   color: var(--text-secondary);
@@ -270,7 +361,6 @@ body {
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
 }
-
 @keyframes spin { to { transform: rotate(360deg); } }
 
 .empty-icon   { font-size: 32px; line-height: 1; margin-bottom: 4px; }
@@ -291,17 +381,15 @@ body {
   gap: 10px;
   padding: 9px 14px;
   border-bottom: 1px solid var(--border);
-  cursor: pointer; /* whole row is clickable to edit */
+  cursor: pointer;
   transition: background 0.12s;
   animation: slide-in 0.18s ease both;
 }
-
 @keyframes slide-in {
   from { opacity: 0; transform: translateY(-4px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-
-.cookie-item:hover    { background: var(--bg-hover); }
+.cookie-item:hover     { background: var(--bg-hover); }
 .cookie-item:last-child { border-bottom: none; }
 
 .cookie-dot {
@@ -313,10 +401,7 @@ body {
   box-shadow: 0 0 5px var(--accent-glow);
 }
 
-.cookie-info {
-  flex: 1;
-  min-width: 0;
-}
+.cookie-info { flex: 1; min-width: 0; }
 
 .cookie-name {
   font-size: 12px;
@@ -348,11 +433,10 @@ body {
   border-radius: 3px;
   text-transform: uppercase;
 }
-.flag-secure  { background: rgba(0,212,170,0.12);  color: var(--accent);          border: 1px solid rgba(0,212,170,0.2);  }
-.flag-http    { background: rgba(255,183,77,0.12);  color: var(--warning);         border: 1px solid rgba(255,183,77,0.2); }
-.flag-session { background: rgba(139,144,184,0.12); color: var(--text-secondary);  border: 1px solid rgba(139,144,184,0.2);}
+.flag-secure  { background: rgba(0,212,170,0.12);  color: var(--accent);         border: 1px solid rgba(0,212,170,0.2);  }
+.flag-http    { background: rgba(255,183,77,0.12);  color: var(--warning);        border: 1px solid rgba(255,183,77,0.2); }
+.flag-session { background: rgba(139,144,184,0.12); color: var(--text-secondary); border: 1px solid rgba(139,144,184,0.2);}
 
-/* Edit hint on hover */
 .edit-hint {
   font-size: 10px;
   color: var(--text-muted);
@@ -362,7 +446,6 @@ body {
 }
 .cookie-item:hover .edit-hint { opacity: 1; }
 
-/* Delete button on each row */
 .delete-btn {
   flex-shrink: 0;
   width: 28px;
@@ -384,7 +467,6 @@ body {
   border-color: rgba(255,83,112,0.25);
 }
 
-/* Row removal animation */
 .cookie-item.removing {
   animation: fade-out 0.22s ease forwards;
   pointer-events: none;
@@ -396,8 +478,6 @@ body {
 /* =============================================
    EDIT PANEL
    ============================================= */
-
-/* Top bar of the edit panel */
 .edit-header {
   display: flex;
   align-items: center;
@@ -423,10 +503,7 @@ body {
   flex-shrink: 0;
   outline: none;
 }
-.back-btn:hover {
-  background: var(--bg-hover);
-  color: var(--text-primary);
-}
+.back-btn:hover { background: var(--bg-hover); color: var(--text-primary); }
 
 .edit-panel-title {
   flex: 1;
@@ -438,7 +515,6 @@ body {
   text-overflow: ellipsis;
 }
 
-/* Delete button in the edit panel header */
 .edit-delete-btn {
   display: flex;
   align-items: center;
@@ -459,10 +535,8 @@ body {
   color: var(--danger);
   border-color: rgba(255,83,112,0.25);
 }
-/* Hide delete button when adding a new cookie (it's toggled in JS) */
 .edit-delete-btn.hidden-btn { visibility: hidden; pointer-events: none; }
 
-/* The scrollable form area */
 .edit-form {
   padding: 14px;
   display: flex;
@@ -470,12 +544,7 @@ body {
   gap: 12px;
 }
 
-/* Each labeled field */
-.field-group {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
+.field-group { display: flex; flex-direction: column; gap: 4px; }
 
 .field-label {
   font-size: 11px;
@@ -485,12 +554,8 @@ body {
   letter-spacing: 0.06em;
 }
 
-.required {
-  color: var(--danger);
-  margin-left: 1px;
-}
+.required { color: var(--danger); margin-left: 1px; }
 
-/* Text inputs, textarea, select */
 .field-input {
   background: var(--bg-card);
   border: 1px solid var(--border-light);
@@ -503,18 +568,16 @@ body {
   width: 100%;
   transition: border-color 0.15s, box-shadow 0.15s;
 }
-
 .field-input:focus {
   border-color: var(--accent);
   box-shadow: 0 0 0 3px var(--accent-dim);
 }
-
 .field-input::placeholder { color: var(--text-muted); }
 
 .field-textarea {
   resize: vertical;
   min-height: 60px;
-  max-height: 120px;
+  max-height: 110px;
   font-size: 11px;
   line-height: 1.5;
 }
@@ -528,14 +591,12 @@ body {
   padding-right: 28px;
 }
 
-/* Date/time input — fight browser default styling */
 .field-input-date {
   flex: 1;
   color-scheme: dark;
   cursor: pointer;
 }
 
-/* Inline error messages below inputs */
 .field-error {
   font-size: 11px;
   color: var(--danger);
@@ -545,41 +606,17 @@ body {
 }
 .field-error::before { content: "⚠ "; }
 
-/* Domain + Path on the same row */
-.field-row {
-  display: flex;
-  gap: 10px;
-  align-items: flex-start;
-}
+.field-row { display: flex; gap: 10px; align-items: flex-start; }
 .field-group-grow   { flex: 1; }
 .field-group-shrink { flex: 0 0 80px; }
 
-/* Expires row: date input + Session checkbox side by side */
-.expires-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
+.expires-row { display: flex; align-items: center; gap: 10px; }
 
-.field-hint {
-  font-size: 10px;
-  color: var(--text-muted);
-  margin-top: 1px;
-}
+.field-hint { font-size: 10px; color: var(--text-muted); margin-top: 1px; }
 
-/* Thin horizontal rule */
-.field-divider {
-  height: 1px;
-  background: var(--border);
-  margin: 2px 0;
-}
+.field-divider { height: 1px; background: var(--border); margin: 2px 0; }
 
-/* Secure + HttpOnly side by side */
-.flags-row {
-  display: flex;
-  gap: 16px;
-  flex-wrap: wrap;
-}
+.flags-row { display: flex; gap: 16px; flex-wrap: wrap; }
 
 /* Custom checkbox */
 .checkbox-label {
@@ -618,7 +655,6 @@ body {
   background: var(--accent);
   border-color: var(--accent);
 }
-
 .checkbox-input:checked + .checkbox-custom::after {
   content: "";
   display: block;
@@ -629,7 +665,6 @@ body {
   transform: rotate(-45deg) translateY(-1px);
 }
 
-/* Error message at the bottom of the form (for save failures) */
 .save-error {
   font-size: 11px;
   color: var(--danger);
@@ -641,7 +676,7 @@ body {
 }
 
 /* =============================================
-   TOAST NOTIFICATION
+   TOAST
    ============================================= */
 .toast {
   position: fixed;
