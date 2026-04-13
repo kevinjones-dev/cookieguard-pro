@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CookieGuard Pro</title>
-  <!-- All styles in a separate file — MV3 does not allow inline styles via style tags with unsafe content -->
   <link rel="stylesheet" href="popup.css" />
 </head>
 <body>
@@ -13,7 +12,7 @@
   <header class="header">
     <div class="header-left">
       <div class="logo">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
           <path d="M10 2L12.5 7H17.5L13.5 10.5L15 15.5L10 12.5L5 15.5L6.5 10.5L2.5 7H7.5L10 2Z" fill="#00d4aa" stroke="#00d4aa" stroke-width="0.5" stroke-linejoin="round"/>
         </svg>
       </div>
@@ -30,41 +29,145 @@
       <span id="cookie-count">0</span>
       <span class="cookie-count-label"> cookies</span>
     </div>
-    <button id="delete-all-btn" class="btn btn-danger" title="Delete all cookies for this site">
-      <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
-        <path d="M2 3.5h9M5 3.5V2.5a.5.5 0 01.5-.5h2a.5.5 0 01.5.5v1M10.5 3.5l-.5 7a.5.5 0 01-.5.5H4a.5.5 0 01-.5-.5l-.5-7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-      Delete All
-    </button>
+    <div class="toolbar-actions">
+      <button id="add-cookie-btn" class="btn btn-accent" title="Add a new cookie">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+          <path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+        Add
+      </button>
+      <button id="delete-all-btn" class="btn btn-danger" title="Delete all cookies for this site">
+        <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+          <path d="M2 3.5h9M5 3.5V2.5a.5.5 0 01.5-.5h2a.5.5 0 01.5.5v1M10.5 3.5l-.5 7a.5.5 0 01-.5.5H4a.5.5 0 01-.5-.5l-.5-7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Delete All
+      </button>
+    </div>
   </div>
 
-  <!-- ===== LOADING STATE ===== -->
-  <div id="loading-state" class="state-view">
-    <div class="spinner"></div>
-    <p>Reading cookies…</p>
-  </div>
+  <!-- ===== SLIDING PANEL CONTAINER =====
+       Both the list and the edit form live inside here.
+       We slide between them with CSS by toggling "showing-edit". -->
+  <div id="panel-container" class="panel-container">
 
-  <!-- ===== EMPTY STATE ===== -->
-  <div id="empty-state" class="state-view hidden">
-    <div class="empty-icon">🍪</div>
-    <p class="empty-title">No cookies found</p>
-    <p class="empty-sub">This site hasn't set any cookies.</p>
-  </div>
+    <!-- PANEL 1: Cookie List -->
+    <div id="panel-list" class="panel">
 
-  <!-- ===== ERROR STATE ===== -->
-  <div id="error-state" class="state-view hidden">
-    <div class="empty-icon">⚠️</div>
-    <p class="empty-title">Can't read cookies here</p>
-    <p class="empty-sub">This doesn't work on Chrome internal pages (chrome://) or the new tab page. Visit a real website and try again.</p>
-  </div>
+      <div id="loading-state" class="state-view">
+        <div class="spinner"></div>
+        <p>Reading cookies…</p>
+      </div>
 
-  <!-- ===== COOKIE LIST ===== -->
-  <ul id="cookie-list" class="cookie-list hidden"></ul>
+      <div id="empty-state" class="state-view hidden">
+        <div class="empty-icon">🍪</div>
+        <p class="empty-title">No cookies found</p>
+        <p class="empty-sub">This site has no cookies yet.<br>Click <strong>+ Add</strong> to create one.</p>
+      </div>
 
-  <!-- ===== TOAST NOTIFICATION ===== -->
+      <div id="error-state" class="state-view hidden">
+        <div class="empty-icon">⚠️</div>
+        <p class="empty-title">Can't read cookies here</p>
+        <p class="empty-sub">This doesn't work on Chrome internal pages or the new tab page. Visit a real website and try again.</p>
+      </div>
+
+      <ul id="cookie-list" class="cookie-list hidden"></ul>
+
+    </div>
+
+    <!-- PANEL 2: Edit / Add Form -->
+    <div id="panel-edit" class="panel">
+
+      <!-- Edit panel top bar -->
+      <div class="edit-header">
+        <button id="back-btn" class="back-btn" title="Back to list">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M10 3L5 8l5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <span id="edit-panel-title" class="edit-panel-title">Edit Cookie</span>
+        <button id="edit-delete-btn" class="edit-delete-btn" title="Delete this cookie">
+          <svg width="14" height="14" viewBox="0 0 13 13" fill="none">
+            <path d="M2 3.5h9M5 3.5V2.5a.5.5 0 01.5-.5h2a.5.5 0 01.5.5v1M10.5 3.5l-.5 7a.5.5 0 01-.5.5H4a.5.5 0 01-.5-.5l-.5-7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- The form fields — using a div, not a <form> tag -->
+      <div class="edit-form">
+
+        <div class="field-group">
+          <label class="field-label" for="field-name">Name <span class="required">*</span></label>
+          <input id="field-name" class="field-input" type="text" placeholder="cookie_name" autocomplete="off" spellcheck="false" />
+          <span id="error-name" class="field-error hidden">Name cannot be empty</span>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label" for="field-value">Value</label>
+          <textarea id="field-value" class="field-input field-textarea" placeholder="cookie value" autocomplete="off" spellcheck="false" rows="3"></textarea>
+        </div>
+
+        <div class="field-row">
+          <div class="field-group field-group-grow">
+            <label class="field-label" for="field-domain">Domain <span class="required">*</span></label>
+            <input id="field-domain" class="field-input" type="text" placeholder="example.com" autocomplete="off" spellcheck="false" />
+            <span id="error-domain" class="field-error hidden">Domain cannot be empty</span>
+          </div>
+          <div class="field-group field-group-shrink">
+            <label class="field-label" for="field-path">Path</label>
+            <input id="field-path" class="field-input" type="text" placeholder="/" autocomplete="off" spellcheck="false" />
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label" for="field-expires">Expires</label>
+          <div class="expires-row">
+            <input id="field-expires" class="field-input field-input-date" type="datetime-local" />
+            <label class="checkbox-label">
+              <input id="field-session" type="checkbox" class="checkbox-input" />
+              <span class="checkbox-custom"></span>
+              Session
+            </label>
+          </div>
+          <p class="field-hint">Session cookies disappear when the browser closes.</p>
+        </div>
+
+        <div class="field-divider"></div>
+
+        <div class="flags-row">
+          <label class="checkbox-label">
+            <input id="field-secure" type="checkbox" class="checkbox-input" />
+            <span class="checkbox-custom"></span>
+            Secure (HTTPS only)
+          </label>
+          <label class="checkbox-label">
+            <input id="field-httponly" type="checkbox" class="checkbox-input" />
+            <span class="checkbox-custom"></span>
+            HttpOnly
+          </label>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label" for="field-samesite">SameSite</label>
+          <select id="field-samesite" class="field-input field-select">
+            <option value="unspecified">Unspecified (default)</option>
+            <option value="lax">Lax</option>
+            <option value="strict">Strict</option>
+            <option value="no_restriction">None (cross-site — requires Secure)</option>
+          </select>
+        </div>
+
+        <button id="save-btn" class="btn btn-save">Save Cookie</button>
+
+        <p id="save-error" class="save-error hidden"></p>
+
+      </div>
+    </div>
+
+  </div><!-- end panel-container -->
+
+  <!-- Toast notification -->
   <div id="toast" class="toast hidden"></div>
 
-  <!-- All JavaScript in a separate file — MV3 does not allow inline scripts -->
   <script src="popup.js"></script>
 </body>
 </html>
